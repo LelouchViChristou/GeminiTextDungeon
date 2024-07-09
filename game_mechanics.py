@@ -31,19 +31,20 @@ def quit_the_game(power: bool) -> bool:
     sys.exit()
     return True
 
+def move_player(grid, direction):
+    if direction not in ['north', 'south', 'east', 'west']:
+        print("Invalid direction. Please choose 'north', 'south', 'east', or 'west'.")
+        return grid.player_x, grid.player_y
 
-def start_music(energetic: bool, loud: bool, bpm: int) -> str:
-    """Play some music matching the specified parameters.
+    new_x, new_y = grid.move_player(grid.player_x, grid.player_y, direction)
 
-    Args:
-      energetic: Whether the music is energetic or not.
-      loud: Whether the music is loud or not.
-      bpm: The beats per minute of the music.
+    if (new_x, new_y) != (grid.player_x, grid.player_y):
+        print(f"You move {direction}.")
+        grid.player_x, grid.player_y = new_x, new_y
+    else:
+        print(f"You can't move {direction} from here.")
 
-    Returns: The name of the song being played.
-    """
-    print(f"Starting music! {energetic=} {loud=}, {bpm=}")
-    return "Never gonna give you up."
+    return grid.player_x, grid.player_y
 
 def talk_to_chat() -> None:
     """Prompts the user for input, sends it to the chat, and prints the response. When you are not sure and what to choose this should be your first option"""
@@ -51,18 +52,18 @@ def talk_to_chat() -> None:
     response = chat.send_message(user_input)
     print(response.text + "\n")
     
-def dim_lights(brightness: float) -> bool:
-    """Dim the lights.
+def get_chat_response(prompt: str) -> str:
+    text_response = []
+    responses = chat.send_message(prompt, stream=True)
+    for chunk in responses:
+        text_response.append(chunk.text)
+    return "".join(text_response)
 
-    Args:
-      brightness: The brightness of the lights, 0.0 is off, 1.0 is full.
-    """
-    print(f"Lights are now set to {brightness:.0%}")
-    return True
-house_fns = [quit_the_game, start_music, talk_to_chat]
+
+house_fns = [quit_the_game,talk_to_chat]
 
 def triggerEvent(input):
-    house_fns = [quit_the_game, start_music, dim_lights]
+    house_fns = [quit_the_game]
     modelDungeonEvents = genai.GenerativeModel('gemini-1.5-flash',tools=house_fns)
     eventChat= modelDungeonEvents.start_chat()
     response=eventChat.send_message(input)
@@ -101,8 +102,6 @@ def doNothing():
 
 functions = {
     "talk_to_chat": talk_to_chat,
-    "start_music": start_music,
-    "dim_lights": dim_lights,
     "quit_the_game":quit_the_game
 }
 

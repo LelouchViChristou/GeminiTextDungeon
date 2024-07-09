@@ -27,7 +27,9 @@ def generate_room(x: int, y: int, model):
         "room_type": str,
         "special_feature": str
       }}
-    
+      
+    In description you should write what will be shown to the player.
+    In special_feature this are hidden from the player and known only to the system in order to deduce if the player met the criteria.
     For puzzle rooms, include a riddle or puzzle in the special_feature.
     For quest rooms, include a quest description in the special_feature.
     For event rooms, describe a random event in the special_feature.
